@@ -11,10 +11,13 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            font-family: 'Intro';
+            src: url('Intro.otf') format('opentype');
             height: 100vh;
             margin: 0;
-            font-family: 'Intro', sans-serif;
+            
         }
+
         #container {
             position: relative;
             width: 300px;
@@ -93,24 +96,29 @@
     </style>
 </head>
 <body>
-    <div id="score">0</div>
-    <div id="container" onclick="scoreUp(event)">
-        <img id="image" src="Star.png" alt="Star">
-        <div id="scoreCounter">+1</div>
-        <div id="plusOneText">+1</div>
-    </div>
-    <div id="progressBar">
-        <div id="progressBarInner"></div>
-    </div>
-    <div>
-        <div class="button" onclick="openUpgradesMenu()">Upgrades</div>
-        <div class="button" id="tasksButton" onclick="openTasksMenu()">Tasks</div>
-    </div>
-    <div class="snackBar" id="snackBar">⭐️ +100</div>
-    <div id="dialog">
-        <div id="dialogContent"></div>
-        <button onclick="closeDialog()">Close</button>
-    </div>
+   <div id="score">0</div>
+   <div id="container" onclick="scoreUp(event)">
+       <img id="image" src="Star.png" alt="Star">
+       <div id="scoreCounter">+1</div>
+       <div id="plusOneText">+1</div>
+   </div>
+   <div id="progressBar">
+       <div id="progressBarInner"></div>
+   </div>
+   <div style="display: flex; justify-content: space-between; width: 220px;">
+       <div class="button" onclick="openUpgradesMenu()">Upgrades</div>
+       <div class="button" id="tasksButton" onclick="openTasksMenu()">Tasks</div>
+   </div>
+   <div class="snackBar" id="snackBar">⭐️ +100</div>
+   <div id="dialog">
+       <div id="dialogContent"></div>
+       <button onclick="closeDialog()">Close</button>
+   </div>
+   <script>
+       // Ваш JavaScript код тут
+   </script>
+</body>
+
     <script>
         let userId = new URLSearchParams(window.location.search).get('user_id') || 'default_user';
         let userData = JSON.parse(localStorage.getItem('userData') || '{}');
@@ -203,6 +211,25 @@
                         });
                 });
         }
+
+        Telegram.WebApp.onEvent('mainButtonClicked', function(){
+         tg.sendData("some string that we need to send"); 
+      });
+
+      let usercard = document.getElementById("usercard"); 
+
+      let profName = document.createElement('p'); 
+      profName.innerText = `${tg.initDataUnsafe.user.first_name} ${tg.initDataUnsafe.user.last_name} ${tg.initDataUnsafe.user.username} (${tg.initDataUnsafe.user.language_code})`; 
+      usercard.appendChild(profName); 
+
+      let userid = document.createElement('p'); 
+      userid.innerText = `${tg.initDataUnsafe.user.id}`; 
+      usercard.appendChild(userid);
+
+      // Додайте код для створення елементу з ім'ям користувача та додавання його над зіркою
+      let userNameElement = document.createElement('p');
+      userNameElement.innerText = `User: ${tg.initDataUnsafe.user.first_name}`;
+      usercard.insertBefore(userNameElement, usercard.firstChild);
 
         function closeDialog() {
             dialog.style.display = 'none';

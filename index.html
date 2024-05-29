@@ -1,114 +1,217 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-   <meta charset="UTF-8">
-   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Test Telegram WebApps API</title>
-   <script src="https://telegram.org/js/telegram-web-app.js"></script> <!--Подключаем скрипт от телеграм-->
-
-   <style>
-      body{
-         color: var(--tg-theme-text-color);
-         background: var(--tg-theme-bg-color);
-         display: flex;
-         flex-direction: column;
-         align-items: center;
-         font-size: 18px;
-      }
-
-      .hint{
-         color: var(--tg-theme-hint-color);
-      }
-
-      .link{
-         color: var(--tg-theme-link-color);
-      }
-
-      .button{
-         background: var(--tg-theme-button-color);
-         color: var(--tg-theme-button-text-color);
-         border: none;
-         font-size: 18px;
-      }
-
-      .button:not(:last-child){
-         margin-bottom: 20px
-      }
-
-      #usercard{
-         text-align: center;
-      }
-   </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Star Clicker</title>
+    <style>
+        body {
+            background-color: #000000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Intro', sans-serif;
+        }
+        #container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 30px 0;
+        }
+        #image {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform: scale(1);
+            transition: transform 0.6s ease;
+        }
+        #scoreCounter, #plusOneText {
+            position: absolute;
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+        #score {
+            font-size: 100px;
+            color: #FFFFFF;
+        }
+        #progressBar {
+            width: calc(100% - 100px);
+            height: 20px;
+            background-color: #808080;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        #progressBarInner {
+            height: 100%;
+            background-color: #ffff00;
+            width: 0%;
+        }
+        .button {
+            display: inline-block;
+            width: 100px;
+            height: 70px;
+            background-color: #007BFF;
+            color: #FFFFFF;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 10px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        .button:hover {
+            transform: scale(1.1);
+        }
+        #tasksButton {
+            background-color: #28A745;
+        }
+        .snackBar {
+            position: fixed;
+            bottom: 20px;
+            background-color: #25223a;
+            color: #ffff00;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            display: none;
+        }
+        #dialog {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #25223a;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+    </style>
 </head>
-
 <body>
-   <div id="usercard"> <!--Карта профиля, человека, который к нам обратился-->
-   </div>
-   <p>Just text</p> <!--Просто текст для проверки-->
-   <a class="link" href="https://be85-176-117-169-172.ngrok-free.app">Link</a> <!--Просто ссылка для проверки-->
-   <p class="hint">Some little hint</p> <!--Просто текст-подсказка для проверки-->
-   <button id="btn" class="button">Show/Hide Main Button</button> <!--Кнопка, чтобы скрыть / показать основную кнопку-->
-   <button id="btnED" class="button">Enable/Disable Main Button</button> <!--Кнопка, чтобы сделать кнопку активной/неактивной-->
+    <div id="score">0</div>
+    <div id="container" onclick="scoreUp(event)">
+        <img id="image" src="Star.png" alt="Star">
+        <div id="scoreCounter">+1</div>
+        <div id="plusOneText">+1</div>
+    </div>
+    <div id="progressBar">
+        <div id="progressBarInner"></div>
+    </div>
+    <div>
+        <div class="button" onclick="openUpgradesMenu()">Upgrades</div>
+        <div class="button" id="tasksButton" onclick="openTasksMenu()">Tasks</div>
+    </div>
+    <div class="snackBar" id="snackBar">⭐️ +100</div>
+    <div id="dialog">
+        <div id="dialogContent"></div>
+        <button onclick="closeDialog()">Close</button>
+    </div>
+    <script>
+        let userId = new URLSearchParams(window.location.search).get('user_id') || 'default_user';
+        let userData = JSON.parse(localStorage.getItem('userData') || '{}');
+        if (!userData[userId]) {
+            userData[userId] = { score: 0, multiplier: 1 };
+        }
+
+        function saveUserData() {
+            localStorage.setItem('userData', JSON.stringify(userData));
+        }
+
+        let scoreElem = document.getElementById('score');
+        let scoreCounter = document.getElementById('scoreCounter');
+        let plusOneText = document.getElementById('plusOneText');
+        let image = document.getElementById('image');
+        let progressBarInner = document.getElementById('progressBarInner');
+        let snackBar = document.getElementById('snackBar');
+        let dialog = document.getElementById('dialog');
+        let dialogContent = document.getElementById('dialogContent');
+
+        function scoreUp(event) {
+            userData[userId].score += 1 * userData[userId].multiplier;
+            scoreElem.textContent = userData[userId].score;
+            progressBarInner.style.width = (userData[userId].score % 100) + '%';
+
+            image.style.transform = 'scale(0.9)';
+
+            if (userData[userId].score % 100 === 0) {
+                showSnackBar('⭐️ +100');
+            }
+
+            let randomX = Math.random() * (container.clientWidth - 50);
+            let randomY = Math.random() * (container.clientHeight - 50);
+            plusOneText.style.left = `${randomX}px`;
+            plusOneText.style.top = `${randomY}px`;
+            plusOneText.style.opacity = 1;
+
+            setTimeout(() => {
+                plusOneText.style.opacity = 0;
+                image.style.transform = 'scale(1)';
+            }, 400);
+
+            saveUserData();
+        }
+
+        function showSnackBar(message) {
+            snackBar.textContent = message;
+            snackBar.style.display = 'block';
+            setTimeout(() => {
+                snackBar.style.display = 'none';
+            }, 2000);
+        }
+
+        function openUpgradesMenu() {
+            dialogContent.innerHTML = `
+                <img src="Star.png" alt="Star" style="width: 100%;">
+                <div style="color: #FFFFFF; font-size: 20px;">x2 Multiplier</div>
+                <button onclick="upgradeX2()">Activate</button>
+            `;
+            dialog.style.display = 'block';
+        }
+
+        function upgradeX2() {
+            if (userData[userId].score >= 100) {
+                userData[userId].score -= 100;
+                userData[userId].multiplier = 2;
+                showSnackBar('Upgrade successful! x2 multiplier activated.');
+            } else {
+                showSnackBar('Not enough points for upgrade.');
+            }
+            closeDialog();
+            saveUserData();
+        }
+
+        function openTasksMenu() {
+            fetch(`https://api.telegram.org/bot${API_TOKEN}/getUserProfilePhotos?user_id=${userId}`)
+                .then(response => response.json())
+                .then(data => {
+                    let profilePhoto = data.result.photos[0];
+                    fetch(`https://api.telegram.org/bot${API_TOKEN}/getFile?file_id=${profilePhoto[0].file_id}`)
+                        .then(response => response.json())
+                        .then(fileData => {
+                            let fileUrl = `https://api.telegram.org/file/bot${API_TOKEN}/${fileData.result.file_path}`;
+                            dialogContent.innerHTML = `
+                                <img src="${fileUrl}" alt="Profile Photo" style="width: 100px;">
+                                <div style="color: #FFFFFF;">${userId}</div>
+                                <div style="color: #FFFFFF;">Task 2</div>
+                            `;
+                            dialog.style.display = 'block';
+                        });
+                });
+        }
+
+        function closeDialog() {
+            dialog.style.display = 'none';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            scoreElem.textContent = userData[userId].score;
+            progressBarInner.style.width = (userData[userId].score % 100) + '%';
+        });
+    </script>
 </body>
-
-<script>
-   let tg = window.Telegram.WebApp; //получаем объект webapp телеграма 
-
-   tg.expand(); //расширяем на все окно  
-
-   tg.MainButton.text = "Changed Text"; //изменяем текст кнопки 
-   tg.MainButton.setText("Changed Text1"); //изменяем текст кнопки иначе
-   tg.MainButton.textColor = "#F55353"; //изменяем цвет текста кнопки
-   tg.MainButton.color = "#143F6B"; //изменяем цвет бэкграунда кнопки
-   tg.MainButton.setParams({"color": "#143F6B"}); //так изменяются все параметры
-
-   let btn = document.getElementById("btn"); //получаем кнопку скрыть/показать 
-
-   btn.addEventListener('click', function(){ //вешаем событие на нажатие html-кнопки
-      if (tg.MainButton.isVisible){ //если кнопка показана 
-         tg.MainButton.hide() //скрываем кнопку 
-      }
-      else{ //иначе
-         tg.MainButton.show() //показываем 
-      }
-   });
-
-   let btnED = document.getElementById("btnED"); //получаем кнопку активировать/деактивировать
-   btnED.addEventListener('click', function(){ //вешаем событие на нажатие html-кнопки
-      if (tg.MainButton.isActive){ //если кнопка показана 
-         tg.MainButton.setParams({"color": "#E0FFFF"}); //меняем цвет
-         tg.MainButton.disable() //скрываем кнопку 
-      }
-      else{ //иначе
-         tg.MainButton.setParams({"color": "#143F6B"}); //меняем цвет
-         tg.MainButton.enable() //показываем 
-      }
-   });
-
-   Telegram.WebApp.onEvent('mainButtonClicked', function(){
-      tg.sendData("some string that we need to send"); 
-      //при клике на основную кнопку отправляем данные в строковом виде
-   });
-
-
-   let usercard = document.getElementById("usercard"); //получаем блок usercard 
-
-   let profName = document.createElement('p'); //создаем параграф
-   profName.innerText = `${tg.initDataUnsafe.user.first_name}
-   ${tg.initDataUnsafe.user.last_name}
-   ${tg.initDataUnsafe.user.username} (${tg.initDataUnsafe.user.language_code})`;
-   //выдем имя, "фамилию", через тире username и код языка
-   usercard.appendChild(profName); //добавляем 
-
-   let userid = document.createElement('p'); //создаем еще параграф 
-   userid.innerText = `${tg.initDataUnsafe.user.id}`; //показываем user_id
-   usercard.appendChild(userid); //добавляем
-
-
-   //работает только в attachment menu
-   // let pic = document.createElement('img'); //создаем img
-   // pic.src = tg.initDataUnsafe.user.photo_url; //задаём src 
-   // usercard.appendChild(pic); //добавляем элемент в карточку 
-</script>
 </html>

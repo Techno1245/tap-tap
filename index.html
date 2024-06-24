@@ -3,137 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram User Info</title>
+    <title>Tap Game</title>
     <style>
         body {
-            background-color: #000000;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-family: Arial, sans-serif;
-            color: #FFFFFF;
             height: 100vh;
             margin: 0;
-            overflow: hidden; /* Prevent scrolling during animation */
         }
-        #loader {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            opacity: 1;
-            transition: opacity 0.5s ease-out;
+        #gameContainer {
+            text-align: center;
         }
-        #loader .spinner {
-            width: 50px;
-            height: 50px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
+        #score {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        #imageContainer {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin-bottom: 20px;
+            border: 5px solid #333;
             border-radius: 50%;
-            border-top-color: #FFFFFF;
+            overflow: hidden;
+            background-color: #FFF;
+        }
+        #image {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 50%;
+        }
+        #tapButton {
+            padding: 10px 20px;
+            font-size: 24px;
+            background-color: #007bff;
+            color: #FFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        #tapButton:hover {
+            background-color: #0056b3;
+        }
+        .loader {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
             animation: spin 1s linear infinite;
+            margin-bottom: 10px;
         }
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        #userInfo {
-            display: none;
-            text-align: center;
-            margin-top: 20px;
-            opacity: 0;
-            transition: opacity 0.5s ease-in;
-        }
-        #userPhoto {
-            border-radius: 50%;
-            margin-bottom: 20px;
-        }
     </style>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const tg = window.Telegram.WebApp;
+</head>
+<body>
+    <div id="gameContainer">
+        <div class="loader"></div>
+        <div id="score">Loading...</div>
+        <div id="imageContainer">
+            <img id="image" src="default_photo_url_here" alt="User Photo">
+        </div>
+        <button id="tapButton" onclick="tapImage()" disabled>Tap!</button>
+    </div>
 
-            // Check if the user agent is not from Telegram Web App
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        let userId = ''; // Placeholder for user ID
+        let score = 0;
+        const scoreElem = document.getElementById('score');
+        const imageElem = document.getElementById('image');
+        const tapButton = document.getElementById('tapButton');
+        const apiUrl = 'https://api.telegram.org/bot<API_TOKEN>';
+
+        // Function to initialize the game with user data
+        function initGame() {
+            // Check if the user agent is from Telegram Web App
+            const tg = window.Telegram?.WebApp;
             if (!tg || !tg.initDataUnsafe) {
-                // Redirect or show an error message if not using Telegram Web App
-                window.location.href = 'https://telegram.org'; // Redirect to Telegram homepage
+                // Redirect to Telegram homepage if not using Telegram Web App
+                window.location.href = 'https://telegram.org';
                 return;
             }
 
-            const loader = document.getElementById('loader');
-            const userInfoDiv = document.getElementById('userInfo');
-            const userPhoto = document.getElementById('userPhoto');
-            const userName = document.getElementById('userName');
-            const userUsername = document.getElementById('userUsername');
-            const userId = document.getElementById('userId');
-            const userLanguage = document.getElementById('userLanguage');
-
-            // Simulate loading animation
+            // Simulate loading delay
             setTimeout(() => {
-                loader.style.opacity = 0;
-                setTimeout(() => {
-                    loader.style.display = 'none';
-                    userInfoDiv.style.display = 'block';
-                    setTimeout(() => {
-                        userInfoDiv.style.opacity = 1;
-                    }, 50); // Delay for smoother transition
-                }, 500); // Delay for loader to fade out
-            }, 2000); // Simulated loading time (2 seconds)
-
-            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-                const user = tg.initDataUnsafe.user;
-
-                userName.textContent = `Name: ${user.first_name} ${user.last_name || ''}`;
-                userUsername.textContent = `Username: ${user.username || 'N/A'}`;
-                userId.textContent = `User ID: ${user.id}`;
-                userLanguage.textContent = `Language: ${user.language_code || 'N/A'}`;
-
-                // Fetch and display user's profile photo
-                const userIdParam = user.id;
-                const apiUrl = `https://api.telegram.org/bot${API_TOKEN}/getUserProfilePhotos?user_id=${userIdParam}`;
-
-                fetch(apiUrl)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.result && data.result.photos && data.result.photos.length > 0) {
-                            const photoFileId = data.result.photos[0][0].file_id;
-                            const fileApiUrl = `https://api.telegram.org/bot${API_TOKEN}/getFile?file_id=${photoFileId}`;
-                            
-                            fetch(fileApiUrl)
-                                .then(response => response.json())
-                                .then(fileData => {
-                                    const fileUrl = `https://api.telegram.org/file/bot${API_TOKEN}/${fileData.result.file_path}`;
-                                    userPhoto.src = fileUrl;
-                                })
-                                .catch(error => {
-                                    console.error('Error fetching file data:', error);
-                                });
-                        } else {
-                            userPhoto.src = 'default_photo_url_here'; // Set a default photo URL if no photo is available
-                        }
+                // Fetch user info from Telegram API
+                axios.get(`${apiUrl}/getMe`)
+                    .then(response => {
+                        const user = response.data.result;
+                        userId = user.id;
+                        // Set user's name and photo
+                        imageElem.src = `https://api.telegram.org/file/bot<API_TOKEN>/${user.photo.small_file_id}`;
+                        scoreElem.textContent = `Score: 0`;
+                        tapButton.removeAttribute('disabled');
                     })
                     .catch(error => {
-                        console.error('Error fetching user profile photos:', error);
+                        console.error('Error fetching user data:', error);
+                        scoreElem.textContent = 'Error loading user data';
                     });
-            } else {
-                document.getElementById('userInfo').innerText = 'User information is not available.';
-            }
+            }, 2000); // Simulated loading time (2 seconds)
+        }
+
+        // Function to handle tapping action
+        function tapImage() {
+            score++;
+            scoreElem.textContent = `Score: ${score}`;
+
+            // Update score in the database (simulated)
+            axios.post('/updateScore', { userId, score })
+                .then(response => {
+                    console.log('Score updated successfully:', response.data);
+                })
+                .catch(error => {
+                    console.error('Error updating score:', error);
+                });
+        }
+
+        // Initialize the game when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            initGame();
         });
     </script>
-</head>
-<body>
-    <div id="loader">
-        <div class="spinner"></div>
-        <p>Loading...</p>
-    </div>
-    <div id="userInfo">
-        <img id="userPhoto" src="" alt="User Photo" width="100" height="100">
-        <p id="userName">Name: N/A</p>
-        <p id="userUsername">Username: N/A</p>
-        <p id="userId">User ID: N/A</p>
-        <p id="userLanguage">Language: N/A</p>
-    </div>
 </body>
 </html>

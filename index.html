@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Star Clicker</title>
+    <title>Telegram User Info</title>
     <style>
         body {
             background-color: #000000;
@@ -11,237 +11,78 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-family: 'Intro';
-            src: url('Intro.otf') format('opentype');
+            font-family: Arial, sans-serif;
+            color: #FFFFFF;
             height: 100vh;
             margin: 0;
         }
-
-        #container {
-            position: relative;
-            width: 300px;
-            height: 300px;
-            margin: 30px 0;
-        }
-        #image {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            transform: scale(1);
-            transition: transform 0.6s ease;
-        }
-        #scoreCounter, #plusOneText {
-            position: absolute;
-            opacity: 0;
-            transition: opacity 0.6s ease;
-        }
-        #score {
-            font-size: 100px;
-            color: #FFFFFF;
-        }
-        #userName {
-            font-size: 20px;
-            color: #FFFFFF;
-            margin-top: 10px;
-        }
-        #progressBar {
-            width: calc(100% - 100px);
-            height: 20px;
-            background-color: #808080;
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 20px 0;
-        }
-        #progressBarInner {
-            height: 100%;
-            background-color: #ffff00;
-            width: 0%;
-        }
-        .button {
-            display: inline-block;
-            width: 100px;
-            height: 70px;
-            background-color: #007BFF;
-            color: #FFFFFF;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 10px;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-        }
-        .button:hover {
-            transform: scale(1.1);
-        }
-        #tasksButton {
-            background-color: #28A745;
-        }
-        .snackBar {
-            position: fixed;
-            bottom: 20px;
-            background-color: #25223a;
-            color: #ffff00;
-            padding: 10px;
-            border-radius: 5px;
+        #userInfo {
             text-align: center;
-            display: none;
+            margin-top: 20px;
         }
-        #dialog {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #25223a;
-            padding: 20px;
-            border-radius: 10px;
-            display: none;
+        #userPhoto {
+            border-radius: 50%;
+            margin-bottom: 20px;
         }
     </style>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-    <div id="score">0</div>
-    <div id="userName">немає</div> <!-- User name element -->
-    <div id="container" onclick="scoreUp(event)">
-        <img id="image" src="Star.png" alt="Star">
-        <div id="scoreCounter">+1</div>
-        <div id="plusOneText">+1</div>
+    <div id="userInfo">
+        <img id="userPhoto" src="" alt="User Photo" width="100" height="100">
+        <p id="userName">Name: N/A</p>
+        <p id="userUsername">Username: N/A</p>
+        <p id="userId">User ID: N/A</p>
+        <p id="userLanguage">Language: N/A</p>
     </div>
-    <div id="progressBar">
-        <div id="progressBarInner"></div>
-    </div>
-    <div style="display: flex; justify-content: space-between; width: 220px;">
-        <div class="button" onclick="openUpgradesMenu()">Upgrades</div>
-        <div class="button" id="tasksButton" onclick="openTasksMenu()">Tasks</div>
-    </div>
-    <div class="snackBar" id="snackBar">⭐️ +100</div>
-    <div id="dialog">
-        <div id="dialogContent"></div>
-        <button onclick="closeDialog()">Close</button>
-    </div>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
-        let userId = new URLSearchParams(window.location.search).get('user_id') || 'default_user';
-        let userData = JSON.parse(localStorage.getItem('userData') || '{}');
-        if (!userData[userId]) {
-            userData[userId] = { score: 0, multiplier: 1 };
-        }
-
-        function saveUserData() {
-            localStorage.setItem('userData', JSON.stringify(userData));
-        }
-
-        let scoreElem = document.getElementById('score');
-        let userNameElem = document.getElementById('userName'); // User name element
-        let scoreCounter = document.getElementById('scoreCounter');
-        let plusOneText = document.getElementById('plusOneText');
-        let image = document.getElementById('image');
-        let progressBarInner = document.getElementById('progressBarInner');
-        let snackBar = document.getElementById('snackBar');
-        let dialog = document.getElementById('dialog');
-        let dialogContent = document.getElementById('dialogContent');
-
-        function scoreUp(event) {
-            userData[userId].score += 1 * userData[userId].multiplier;
-            scoreElem.textContent = userData[userId].score;
-            progressBarInner.style.width = (userData[userId].score % 100) + '%';
-
-            image.style.transform = 'scale(0.9)';
-
-            if (userData[userId].score % 100 === 0) {
-                showSnackBar('⭐️ +100');
-            }
-
-            let randomX = Math.random() * (container.clientWidth - 50);
-            let randomY = Math.random() * (container.clientHeight - 50);
-            plusOneText.style.left = `${randomX}px`;
-            plusOneText.style.top = `${randomY}px`;
-            plusOneText.style.opacity = 1;
-
-            setTimeout(() => {
-                plusOneText.style.opacity = 0;
-                image.style.transform = 'scale(1)';
-            }, 400);
-
-            saveUserData();
-        }
-
-        function showSnackBar(message) {
-            snackBar.textContent = message;
-            snackBar.style.display = 'block';
-            setTimeout(() => {
-                snackBar.style.display = 'none';
-            }, 2000);
-        }
-
-        function openUpgradesMenu() {
-            dialogContent.innerHTML = `
-                <img src="Star.png" alt="Star" style="width: 100%;">
-                <div style="color: #FFFFFF; font-size: 20px;">x2 Multiplier</div>
-                <button onclick="upgradeX2()">Activate</button>
-            `;
-            dialog.style.display = 'block';
-        }
-
-        function upgradeX2() {
-            if (userData[userId].score >= 100) {
-                userData[userId].score -= 100;
-                userData[userId].multiplier = 2;
-                showSnackBar('Upgrade successful! x2 multiplier activated.');
-            } else {
-                showSnackBar('Not enough points for upgrade.');
-            }
-            closeDialog();
-            saveUserData();
-        }
-
-        function openTasksMenu() {
-            fetch(`https://api.telegram.org/bot${API_TOKEN}/getUserProfilePhotos?user_id=${userId}`)
-                .then(response => response.json())
-                .then(data => {
-                    let profilePhoto = data.result.photos[0];
-                    fetch(`https://api.telegram.org/bot${API_TOKEN}/getFile?file_id=${profilePhoto[0].file_id}`)
-                        .then(response => response.json())
-                        .then(fileData => {
-                            let fileUrl = `https://api.telegram.org/file/bot${API_TOKEN}/${fileData.result.file_path}`;
-                            dialogContent.innerHTML = `
-                                <img src="${fileUrl}" alt="Profile Photo" style="width: 100px;">
-                                <div style="color: #FFFFFF;">${userId}</div>
-                                <div style="color: #FFFFFF;">Task 2</div>
-                            `;
-                            dialog.style.display = 'block';
-                        });
-                });
-        }
-
-        Telegram.WebApp.onEvent('mainButtonClicked', function(){
-            tg.sendData("some string that we need to send"); 
-        });
-
-        let usercard = document.getElementById("usercard"); 
-
-        let profName = document.createElement('p'); 
-        profName.innerText = `${tg.initDataUnsafe.user.first_name} ${tg.initDataUnsafe.user.last_name} ${tg.initDataUnsafe.user.username} (${tg.initDataUnsafe.user.language_code})`; 
-        usercard.appendChild(profName); 
-
-        let userid = document.createElement('p'); 
-        userid.innerText = `${tg.initDataUnsafe.user.id}`; 
-        usercard.appendChild(userid);
-
-        function closeDialog() {
-            dialog.style.display = 'none';
-        }
-
         document.addEventListener('DOMContentLoaded', () => {
-            scoreElem.textContent = userData[userId].score;
-            progressBarInner.style.width = (userData[userId].score % 100) + '%';
+            const tg = window.Telegram.WebApp;
 
-            // Set the user name
-            let userName = 'немає';
-            if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.first_name) {
-                userName = tg.initDataUnsafe.user.first_name;
+            if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                const user = tg.initDataUnsafe.user;
+                const userInfoDiv = document.getElementById('userInfo');
+                const userPhoto = document.getElementById('userPhoto');
+                const userName = document.getElementById('userName');
+                const userUsername = document.getElementById('userUsername');
+                const userId = document.getElementById('userId');
+                const userLanguage = document.getElementById('userLanguage');
+
+                userName.textContent = `Name: ${user.first_name} ${user.last_name || ''}`;
+                userUsername.textContent = `Username: ${user.username || 'N/A'}`;
+                userId.textContent = `User ID: ${user.id}`;
+                userLanguage.textContent = `Language: ${user.language_code || 'N/A'}`;
+
+                // Fetch and display user's profile photo
+                const userIdParam = user.id;
+                const apiUrl = `https://api.telegram.org/bot${API_TOKEN}/getUserProfilePhotos?user_id=${userIdParam}`;
+
+                fetch(apiUrl)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.result && data.result.photos && data.result.photos.length > 0) {
+                            const photoFileId = data.result.photos[0][0].file_id;
+                            const fileApiUrl = `https://api.telegram.org/bot${API_TOKEN}/getFile?file_id=${photoFileId}`;
+                            
+                            fetch(fileApiUrl)
+                                .then(response => response.json())
+                                .then(fileData => {
+                                    const fileUrl = `https://api.telegram.org/file/bot${API_TOKEN}/${fileData.result.file_path}`;
+                                    userPhoto.src = fileUrl;
+                                })
+                                .catch(error => {
+                                    console.error('Error fetching file data:', error);
+                                });
+                        } else {
+                            userPhoto.src = 'default_photo_url_here'; // Set a default photo URL if no photo is available
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching user profile photos:', error);
+                    });
+            } else {
+                document.getElementById('userInfo').innerText = 'User information is not available.';
             }
-            userNameElem.textContent = `User: ${userName}`;
         });
     </script>
 </body>

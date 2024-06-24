@@ -163,14 +163,7 @@
                 document.getElementById('userInfo').innerText = 'User information is not available.';
             }
 
-            // Handle click event on Connect Wallet button
-            connectWalletButton.addEventListener('click', () => {
-                const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-                    manifestUrl: 'https://techno1245.github.io/tap-tap/tonconnect-manifest.json', // Replace with your actual manifest URL
-                    buttonRootId: 'connectWalletButton'
-                });
-                tonConnectUI.connect();
-            });
+
         });
     </script>
 </head>
@@ -191,7 +184,13 @@
         <p id="userUsername"> N/A</p>
         <p id="userId"> N/A</p>
 
-        <button id="connectWalletButton">Connect Wallet</button>
+        <div id="connectWalletButton1"></div>
+        <script>
+            const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+                manifestUrl: 'https://techno1245.github.io/tap-tap/tonconnect-manifest.json', // Replace with your actual manifest URL
+                buttonRootId: 'connectWalletButton1'
+            });
+        </script>
     </div>
 
     <!-- JavaScript for stars animation -->

@@ -39,6 +39,11 @@
             font-size: 100px;
             color: #FFFFFF;
         }
+        #userName {
+            font-size: 20px;
+            color: #FFFFFF;
+            margin-top: 10px;
+        }
         #progressBar {
             width: calc(100% - 100px);
             height: 20px;
@@ -96,6 +101,7 @@
 </head>
 <body>
     <div id="score">0</div>
+    <div id="userName">немає</div> <!-- User name element -->
     <div id="container" onclick="scoreUp(event)">
         <img id="image" src="Star.png" alt="Star">
         <div id="scoreCounter">+1</div>
@@ -114,10 +120,6 @@
         <button onclick="closeDialog()">Close</button>
     </div>
     <script>
-        // Ваш JavaScript код тут
-    </script>
-
-    <script>
         let userId = new URLSearchParams(window.location.search).get('user_id') || 'default_user';
         let userData = JSON.parse(localStorage.getItem('userData') || '{}');
         if (!userData[userId]) {
@@ -129,6 +131,7 @@
         }
 
         let scoreElem = document.getElementById('score');
+        let userNameElem = document.getElementById('userName'); // User name element
         let scoreCounter = document.getElementById('scoreCounter');
         let plusOneText = document.getElementById('plusOneText');
         let image = document.getElementById('image');
@@ -224,12 +227,6 @@
         userid.innerText = `${tg.initDataUnsafe.user.id}`; 
         usercard.appendChild(userid);
 
-        // Додайте код для створення елементу з ім'ям користувача та додавання його над зіркою
-        let userNameElement = document.createElement('p');
-        userNameElement.innerText = `User: ${tg.initDataUnsafe.user.first_name}`;
-        userNameElement.style.color = '#FFFFFF';
-        usercard.insertBefore(userNameElement, usercard.firstChild);
-
         function closeDialog() {
             dialog.style.display = 'none';
         }
@@ -237,9 +234,9 @@
         document.addEventListener('DOMContentLoaded', () => {
             scoreElem.textContent = userData[userId].score;
             progressBarInner.style.width = (userData[userId].score % 100) + '%';
-            // Додавання елемента userNameElement після завантаження сторінки
-            let container = document.getElementById('container');
-            container.insertBefore(userNameElement, container.firstChild);
+            // Set the user name
+            let userName = tg.initDataUnsafe.user.first_name || 'немає';
+            userNameElem.textContent = `User: ${userName}`;
         });
     </script>
 </body>

@@ -185,11 +185,31 @@
         <p id="userId"> N/A</p>
 
         <div id="connectWalletButton1"></div>
+        <button onclick="transaction()">Send TON</button>
         <script>
             const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-                manifestUrl: 'https://techno1245.github.io/tap-tap/tonconnect-manifest.json', // Replace with your actual manifest URL
+                manifestUrl: 'https://techno1245.github.io/tonconnect-manifest.json', // Replace with your actual manifest URL
                 buttonRootId: 'connectWalletButton1'
             });
+
+        async function transaction() {
+            const transaction = {
+                validUntil: Math.round(Date.now() / 1000) + 10,
+                messages: [
+                    {
+                        address: "0:00000000000000000000000000000000000000000",
+                        amount: "10000"
+                    }
+                ]
+            };
+
+
+            try {
+                await TonConnectUI.sendTransaction(transaction);
+            } catch (e) {
+                console.error(e);
+            }
+        }
         </script>
     </div>
 

@@ -165,11 +165,7 @@
 
             // Handle click event on Connect Wallet button
             connectWalletButton.addEventListener('click', () => {
-                tg.auth.request({
-                    bot_id: 'YOUR_BOT_ID', // Replace with your bot ID
-                    scope: 'wallet.authorize',
-                    redirect_uri: 'YOUR_REDIRECT_URI' // Replace with your redirect URI
-                });
+                tg.ui.requestTonConnect();
             });
         });
     </script>

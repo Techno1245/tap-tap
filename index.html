@@ -92,13 +92,13 @@
         }
     </style>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://unpkg.com/@tonconnect/ui@0.0.9/dist/tonconnect-ui.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const tg = window.Telegram.WebApp;
 
             // Check if the user agent is not from Telegram Web App
             if (!tg || !tg.initDataUnsafe) {
-                // Redirect or show an error message if not using Telegram Web App
                 window.location.href = 'https://telegram.org'; // Redirect to Telegram homepage
                 return;
             }
@@ -120,9 +120,9 @@
                     userInfoDiv.style.display = 'block';
                     setTimeout(() => {
                         userInfoDiv.style.opacity = 1;
-                    }, 50); // Delay for smoother transition
-                }, 500); // Delay for loader to fade out
-            }, 2000); // Simulated loading time (2 seconds)
+                    }, 50);
+                }, 500);
+            }, 2000);
 
             if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
                 const user = tg.initDataUnsafe.user;
@@ -153,7 +153,7 @@
                                     console.error('Error fetching file data:', error);
                                 });
                         } else {
-                            userPhoto.src = 'default_photo_url_here'; // Set a default photo URL if no photo is available
+                            userPhoto.src = 'default_photo_url_here';
                         }
                     })
                     .catch(error => {
@@ -165,7 +165,11 @@
 
             // Handle click event on Connect Wallet button
             connectWalletButton.addEventListener('click', () => {
-                tg.ui.requestTonConnect();
+                const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+                    manifestUrl: 'https://your.app/tonconnect-manifest.json', // Replace with your actual manifest URL
+                    buttonRootId: 'connect'
+                });
+                tonConnectUI.connect();
             });
         });
     </script>
@@ -183,25 +187,24 @@
     </div>
     <div id="userInfo">
         <img id="userPhoto" src="" alt="User Photo" width="100" height="100">
-        <p id="userName">Name: N/A</p>
-        <p id="userUsername">Username: N/A</p>
-        <p id="userId">User ID: N/A</p>
-        <p id="userLanguage">Language: N/A</p>
+        <p id="userName">N/A</p>
+        <p id="userUsername">N/A</p>
+        <p id="userId">N/A</p>
+
         <button id="connectWalletButton">Connect Wallet</button>
     </div>
 
     <!-- JavaScript for stars animation -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Generate stars dynamically
             const starsContainer = document.getElementById('stars');
-            const numStars = 200; // Number of stars to create
+            const numStars = 200;
 
             for (let i = 0; i < numStars; i++) {
                 const star = document.createElement('div');
                 star.classList.add('star');
-                star.style.left = `${Math.random() * 100}%`; // Random horizontal position
-                star.style.animationDuration = `${Math.random() * 10 + 5}s`; // Random animation duration
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.animationDuration = `${Math.random() * 10 + 5}s`;
                 starsContainer.appendChild(star);
             }
         });

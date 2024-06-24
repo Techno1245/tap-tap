@@ -87,14 +87,6 @@
 
         // Function to initialize the game with user data
         function initGame() {
-            // Check if the user agent is from Telegram Web App
-            const tg = window.Telegram?.WebApp;
-            if (!tg || !tg.initDataUnsafe) {
-                // Redirect to Telegram homepage if not using Telegram Web App
-                window.location.href = 'https://telegram.org';
-                return;
-            }
-
             // Simulate loading delay
             setTimeout(() => {
                 // Fetch user info from Telegram API

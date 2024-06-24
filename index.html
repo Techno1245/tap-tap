@@ -76,6 +76,20 @@
             border-radius: 50%;
             margin-bottom: 20px;
         }
+        #connectWalletButton {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #007bff;
+            color: #FFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+        }
+        #connectWalletButton:hover {
+            background-color: #0056b3;
+        }
     </style>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
@@ -96,6 +110,7 @@
             const userUsername = document.getElementById('userUsername');
             const userId = document.getElementById('userId');
             const userLanguage = document.getElementById('userLanguage');
+            const connectWalletButton = document.getElementById('connectWalletButton');
 
             // Simulate loading animation
             setTimeout(() => {
@@ -147,6 +162,15 @@
             } else {
                 document.getElementById('userInfo').innerText = 'User information is not available.';
             }
+
+            // Handle click event on Connect Wallet button
+            connectWalletButton.addEventListener('click', () => {
+                tg.auth.request({
+                    bot_id: 'YOUR_BOT_ID', // Replace with your bot ID
+                    scope: 'wallet.authorize',
+                    redirect_uri: 'YOUR_REDIRECT_URI' // Replace with your redirect URI
+                });
+            });
         });
     </script>
 </head>
@@ -163,10 +187,11 @@
     </div>
     <div id="userInfo">
         <img id="userPhoto" src="" alt="User Photo" width="100" height="100">
-        <p id="userName">N/A</p>
-        <p id="userUsername">N/A</p>
-        <p id="userId">Your id: N/A</p>
-
+        <p id="userName">Name: N/A</p>
+        <p id="userUsername">Username: N/A</p>
+        <p id="userId">User ID: N/A</p>
+        <p id="userLanguage">Language: N/A</p>
+        <button id="connectWalletButton">Connect Wallet</button>
     </div>
 
     <!-- JavaScript for stars animation -->

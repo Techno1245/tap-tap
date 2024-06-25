@@ -15,16 +15,16 @@
             color: #FFFFFF;
             height: 100vh;
             margin: 0;
-            overflow: hidden;
+            overflow: hidden; /* Prevent scrolling during animation */
         }
         #stars {
-            pointer-events: none;
+            pointer-events: none; /* Stars should not interfere with content */
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1;
+            z-index: -1; /* Behind other content */
         }
         .star {
             position: absolute;
@@ -32,8 +32,8 @@
             height: 2px;
             background-color: rgba(255, 255, 255, 0.5);
             border-radius: 50%;
-            pointer-events: none;
-            animation: starFall 60s linear infinite, starFade 20s linear infinite, starTwinkle 1s infinite alternate;
+            pointer-events: none; /* Stars should not interfere with content */
+            animation: starFall 60s linear infinite, starFade 20s linear infinite;
         }
         @keyframes starFall {
             from { transform: translateY(-10vh); }
@@ -43,10 +43,6 @@
             0% { opacity: 1; }
             50% { opacity: 0.5; }
             100% { opacity: 1; }
-        }
-        @keyframes starTwinkle {
-            from { transform: scale(1); }
-            to { transform: scale(1.5); }
         }
         #loader {
             display: flex;
@@ -76,9 +72,18 @@
             opacity: 0;
             transition: opacity 0.5s ease-in;
         }
+        #userInfo.show {
+            display: block;
+        }
         #userPhoto {
             border-radius: 50%;
             margin-bottom: 20px;
+            width: 100px; /* Adjust size as needed */
+            height: 100px; /* Adjust size as needed */
+        }
+        #userName, #userId {
+            font-size: 24px; /* Adjust font size as needed */
+            transition: font-size 0.5s ease; /* Smooth transition for font size */
         }
         #connectWalletButton {
             padding: 10px 20px;
@@ -100,18 +105,8 @@
             bottom: 20px;
             left: 0;
             right: 0;
-            text-align: center;
+            text-align: center; /* Additional centering */
         }
-
-        #coin {
-            width: 200px;
-            height: 200px;
-            background-image: url('notcoin.png');
-            background-size: cover;
-            transition: transform 0.5s;
-            perspective: 1000px;
-        }
-
     </style>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@0.0.9/dist/tonconnect-ui.min.js"></script>
@@ -129,17 +124,14 @@
             const userInfoDiv = document.getElementById('userInfo');
             const userPhoto = document.getElementById('userPhoto');
             const userName = document.getElementById('userName');
-            const userUsername = document.getElementById('userUsername');
             const userId = document.getElementById('userId');
-            const userLanguage = document.getElementById('userLanguage');
-            const connectWalletButton = document.getElementById('connectWalletButton');
 
             // Simulate loading animation
             setTimeout(() => {
                 loader.style.opacity = 0;
                 setTimeout(() => {
                     loader.style.display = 'none';
-                    userInfoDiv.style.display = 'block';
+                    userInfoDiv.classList.add('show'); // Show user info
                     setTimeout(() => {
                         userInfoDiv.style.opacity = 1;
                     }, 50);
@@ -149,25 +141,8 @@
             if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
                 const user = tg.initDataUnsafe.user;
 
-                userName.textContent = `${user.first_name} ${user.last_name || ''}`;
-                userId.textContent = `ID: ${user.id}`;
-
-                // Save user data to the database
-                fetch('/saveUserData', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        id: user.id,
-                        first_name: user.first_name,
-                        last_name: user.last_name,
-                        username: user.username,
-                        language_code: user.language_code
-                    })
-                }).catch(error => {
-                    console.error('Error saving user data:', error);
-                });
+                userName.textContent = `Name: ${user.first_name} ${user.last_name || ''}`;
+                userId.textContent = `User ID: ${user.id}`;
 
                 // Fetch and display user's profile photo
                 const userIdParam = user.id;
@@ -197,9 +172,8 @@
                         console.error('Error fetching user profile photos:', error);
                     });
             } else {
-                document.getElementById('userInfo').innerText = 'User information is not available.';
+                userInfoDiv.innerText = 'User information is not available.';
             }
-
         });
     </script>
 </head>
@@ -214,21 +188,14 @@
         <div class="spinner"></div>
         <p>Loading...</p>
     </div>
-
-
-
-
-    
     <div id="userInfo">
-
+        <img id="userPhoto" src="" alt="User Photo">
         <p id="userName">N/A</p>
-        <p id="userId"> N/A</p>
-        <div id="coin"></div>
+        <p id="userId">N/A</p>
         <div id="connectWalletButton1"></div>
-
         <script>
             const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-                manifestUrl: 'https://techno1245.github.io/tonconnect-manifest.json',
+                manifestUrl: 'https://techno1245.github.io/tonconnect-manifest.json', // Replace with your actual manifest URL
                 buttonRootId: 'connectWalletButton1'
             });
 
@@ -244,7 +211,7 @@
                 };
 
                 try {
-                    await tonConnectUI.sendTransaction(transaction);
+                    await TonConnectUI.sendTransaction(transaction);
                 } catch (e) {
                     console.error(e);
                 }
@@ -262,35 +229,11 @@
                 const star = document.createElement('div');
                 star.classList.add('star');
                 star.style.left = `${Math.random() * 100}%`;
-                star.style.animationDuration = `${Math.random() * 10 + 5}s`;
+                star.style.top = `${Math.random() * 100}vh`; // Place stars randomly in the viewport height
+                star.style.animationDuration = `${Math.random() * 10 + 5}s`; // Vary animation duration for each star
                 starsContainer.appendChild(star);
             }
         });
-
-        
     </script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const coin = document.getElementById('coin');
-
-            coin.addEventListener('mousemove', (event) => {
-                const rect = coin.getBoundingClientRect();
-                const x = event.clientX - rect.left; // x позиція в межах елемента
-                const y = event.clientY - rect.top;  // y позиція в межах елемента
-
-                // Обчислюємо кути обертання в залежності від положення миші
-                const rotateY = (x / rect.width - 0.5) * 30; // Від -15 до 15 градусів
-                const rotateX = -(y / rect.height - 0.5) * 30; // Від -15 до 15 градусів
-
-                coin.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
-            });
-
-            coin.addEventListener('mouseleave', () => {
-                coin.style.transform = 'rotateY(0) rotateX(0)';
-            });
-        });
-    </script>
-
 </body>
 </html>

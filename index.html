@@ -8,6 +8,8 @@
         body {
             background-color: #0f0f0f;
             background-image: radial-gradient(circle, #1a82f7, #2b2b2b);
+            background-size: 200% 200%; /* Double the size for smooth animation */
+            animation: swimBackground 20s infinite linear; /* Animation settings */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -17,6 +19,19 @@
             overflow: hidden; /* Prevent scrolling */
             color: #ffffff;
         }
+        
+        @keyframes swimBackground {
+            0% {
+                background-position: 0% 0%;
+            }
+            50% {
+                background-position: 100% 100%;
+            }
+            100% {
+                background-position: 0% 0%;
+            }
+        }
+
         .container {
             max-width: 600px;
             text-align: center;
@@ -46,9 +61,6 @@
             -moz-user-select: none; /* For older versions of Firefox */
             -ms-user-select: none; /* For older versions of IE */
             -webkit-tap-highlight-color: transparent; /* Remove tap highlight on iOS */
-        }
-        .button:hover {
-            transform: scale(1.1);
         }
         .button:active {
             transform: scale(0.9); /* Scale down on press */
@@ -116,7 +128,7 @@
             width: 100px;
             height: 100px;
         }
-        #userName, #userId {
+        #userClicks, #userName, #userId {
             font-size: 24px;
             margin-top: 10px;
         }
@@ -140,6 +152,7 @@
 
 <div id="userInfo" class="container">
     <img id="userPhoto" src="" alt="User Photo">
+    <p id="userClicks">Clicks: 0</p>
     <p id="userName">N/A</p>
     <p id="userId">ID: N/A</p>
     <a href="#" class="button" id="roundButton">
@@ -155,10 +168,12 @@
     const userPhoto = document.getElementById('userPhoto');
     const userName = document.getElementById('userName');
     const userId = document.getElementById('userId');
+    const userClicksElement = document.getElementById('userClicks');
     const button = document.getElementById('roundButton');
     const pcMessage = document.getElementById('pcMessage');
 
     let userClicks = 0;
+
     const saveClicks = (userId, clicks) => {
         const balances = JSON.parse(localStorage.getItem('balances')) || {};
         balances[userId] = clicks;
@@ -174,7 +189,7 @@
         const translateX = (x - rect.width / 2) * 0.3;
         const translateY = (y - rect.height / 2) * 0.3;
 
-        button.style.transform = `perspective(1000px) rotateX(${-translateY}deg) rotateY(${translateX}deg)`;
+        button.style.transform = `perspective(10px) rotateX(${-translateY}deg) rotateY(${translateX}deg)`;
     });
 
     button.addEventListener('touchend', () => {
@@ -183,8 +198,10 @@
 
     button.addEventListener('click', (event) => {
         userClicks++;
-        saveClicks(userId.textContent.split(': ')[1], userClicks);
-        alert(`Clicks: ${userClicks}`);
+        userClicksElement.textContent = `Clicks: ${userClicks}`;
+        if (userClicks % 2 === 0) {
+            saveClicks(userId.textContent.split(': ')[1], userClicks);
+        }
     });
 
     // Simulating loading completion
@@ -216,6 +233,7 @@
             // Load user clicks from localStorage
             const balances = JSON.parse(localStorage.getItem('balances')) || {};
             userClicks = balances[user.id] || 0;
+            userClicksElement.textContent = `Clicks: ${userClicks}`;
         } else {
             userInfoDiv.innerText = 'User information is not available.';
         }

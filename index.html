@@ -113,10 +113,6 @@
             text-align: center; /* Additional centering */
         }
 
-        #photoButton:hover {
-            transform: scale(1.1);
-        }
-
         .button {
             position: relative;
             width: 100px;
@@ -134,9 +130,10 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
             transition: transform 0.3s ease;
             margin-top: 20px;
+            perspective: 1000px; /* Added perspective for 3D effect */
         }
         .button:hover {
-            transform: scale(1.1);
+            transform: scale(1.1) rotateX(20deg); /* Added rotateX for 3D effect on hover */
         }
         .button::before {
             content: "";
@@ -190,6 +187,7 @@
                 const user = tg.initDataUnsafe.user;
 
                 userName.textContent = `${user.first_name} ${user.last_name || ''}`;
+                userId.textContent = `ID: ${user.id}`; // Display user ID
 
                 // Fetch and display user's profile photo
                 const userIdParam = user.id;
@@ -238,7 +236,11 @@
     <div id="userInfo">
         <p id="userName">N/A</p>
         <p id="userId">N/A</p>
-        <div id="connectWalletButton1"></div>
+        <div id="connectWalletButton1">
+            <a href="#" class="button">
+                <span>Connect Wallet</span>
+            </a>
+        </div>
         <script>
             const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
                 manifestUrl: 'https://techno1245.github.io/tonconnect-manifest.json', // Replace with your actual manifest URL
@@ -257,7 +259,7 @@
                 };
 
                 try {
-                    await TonConnectUI.sendTransaction(transaction);
+                    await tonConnectUI.sendTransaction(transaction);
                 } catch (e) {
                     console.error(e);
                 }

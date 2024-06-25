@@ -3,62 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram User Info</title>
+    <title>User Profile</title>
     <style>
         body {
-            background-color: #000000;
+            background-color: #0f0f0f;
+            background-image: radial-gradient(circle, #1a82f7, #2b2b2b);
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
-            font-family: Arial, sans-serif;
-            color: #FFFFFF;
+            align-items: center;
             height: 100vh;
             margin: 0;
-            overflow: hidden; /* Prevent scrolling during animation */
+            font-family: Arial, sans-serif;
+            overflow: hidden; /* Prevent scrolling */
+            color: #ffffff;
         }
-        #stars {
-            pointer-events: none; /* Stars should not interfere with content */
-            position: fixed;
+        .container {
+            max-width: 600px;
+            text-align: center;
+        }
+        .button {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            background-color: #007bff;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+            font-size: 18px;
+            text-decoration: none;
+            overflow: hidden;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+        .button:hover {
+            transform: scale(1.1);
+        }
+        .button::before {
+            content: "";
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1; /* Behind other content */
+            background-color: rgba(255, 255, 255, 0.2);
+            transform-origin: bottom right;
+            transform: scaleY(0) scaleX(0);
+            transition: transform 0.3s ease;
+            z-index: -1;
         }
-        .star {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background-color: rgba(255, 255, 255, 0.5);
-            border-radius: 50%;
-            pointer-events: none; /* Stars should not interfere with content */
-            animation: starFall 60s linear infinite, starFade 20s linear infinite;
+        .button:hover::before {
+            transform: scaleY(1) scaleX(1);
         }
-        @keyframes starFall {
-            from { transform: translateY(-10vh); }
-            to { transform: translateY(110vh); }
-        }
-        @keyframes starFade {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
+        .button span {
+            position: relative;
+            z-index: 1;
         }
         #loader {
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             height: 100%;
             opacity: 1;
             transition: opacity 0.5s ease-out;
         }
-        #loader .spinner {
+        .spinner {
             width: 50px;
             height: 50px;
             border: 3px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
-            border-top-color: #FFFFFF;
+            border-top-color: #ffffff;
             animation: spin 1s linear infinite;
         }
         @keyframes spin {
@@ -83,231 +99,85 @@
         #userPhoto {
             border-radius: 50%;
             margin-bottom: 20px;
-            width: 100px; /* Adjust size as needed */
-            height: 100px; /* Adjust size as needed */
-        }
-        #userName, #userId {
-            font-size: 24px; /* Adjust font size as needed */
-            transition: font-size 0.5s ease; /* Smooth transition for font size */
-        }
-        #connectWalletButton {
-            padding: 10px 20px;
-            font-size: 18px;
-            background-color: #007bff;
-            color: #FFF;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            margin-top: 20px;
-        }
-        #connectWalletButton:hover {
-            background-color: #0056b3;
-        }
-
-        #connectWalletButton1 {
-            position: fixed;
-            bottom: 20px;
-            left: 0;
-            right: 0;
-            text-align: center; /* Additional centering */
-        }
-
-        .button {
-            position: relative;
             width: 100px;
             height: 100px;
-            background-color: #007bff;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #ffffff;
-            font-size: 18px;
-            text-decoration: none;
-            overflow: hidden;
-            cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease;
-            margin-top: 20px;
-            perspective: 1000px; /* Added perspective for 3D effect */
         }
-        .button:hover {
-            transform: scale(1.1) rotateX(20deg); /* Added rotateX for 3D effect on hover */
-        }
-        .button::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(255, 255, 255, 0.2);
-            transform-origin: bottom right;
-            transform: scaleY(0) scaleX(0);
-            transition: transform 0.3s ease;
-            z-index: -1;
-        }
-        .button:hover::before {
-            transform: scaleY(1) scaleX(1);
-        }
-        .button span {
-            position: relative;
-            z-index: 1;
-        }
-        #clickCount {
-            color: #ffffff;
+        #userName, #userId {
             font-size: 24px;
-            margin-top: 20px;
+            margin-top: 10px;
         }
     </style>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://unpkg.com/@tonconnect/ui@0.0.9/dist/tonconnect-ui.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const tg = window.Telegram.WebApp;
-
-            // Check if the user agent is not from Telegram Web App
-            if (!tg || !tg.initDataUnsafe) {
-                window.location.href = 'https://telegram.org'; // Redirect to Telegram homepage
-                return;
-            }
-
-            const loader = document.getElementById('loader');
-            const userInfoDiv = document.getElementById('userInfo');
-            const userPhoto = document.getElementById('userPhoto');
-            const userName = document.getElementById('userName');
-            const userId = document.getElementById('userId');
-            const clickCountDisplay = document.getElementById('clickCount');
-            let clickCount = 0;
-
-            // Simulate loading animation
-            setTimeout(() => {
-                loader.style.opacity = 0;
-                setTimeout(() => {
-                    loader.style.display = 'none';
-                    userInfoDiv.classList.add('show'); // Show user info
-                }, 500);
-            }, 2000);
-
-            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-                const user = tg.initDataUnsafe.user;
-
-                userName.textContent = `${user.first_name} ${user.last_name || ''}`;
-                userId.textContent = `ID: ${user.id}`; // Display user ID
-                
-                // Fetch and display user's profile photo
-                const userIdParam = user.id;
-                const apiUrl = `https://api.telegram.org/bot${API_TOKEN}/getUserProfilePhotos?user_id=${userIdParam}`;
-
-                fetch(apiUrl)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.result && data.result.photos && data.result.photos.length > 0) {
-                            const photoFileId = data.result.photos[0][0].file_id;
-                            const fileApiUrl = `https://api.telegram.org/bot${API_TOKEN}/getFile?file_id=${photoFileId}`;
-                            
-                            fetch(fileApiUrl)
-                                .then(response => response.json())
-                                .then(fileData => {
-                                    const fileUrl = `https://api.telegram.org/file/bot${API_TOKEN}/${fileData.result.file_path}`;
-                                    userPhoto.src = fileUrl;
-                                })
-                                .catch(error => {
-                                    console.error('Error fetching file data:', error);
-                                });
-                        } else {
-                            userPhoto.src = 'default_photo_url_here';
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error fetching user profile photos:', error);
-                    });
-
-                // Creating and appending the button dynamically
-                const button = document.createElement('a');
-                button.href = '#';
-                button.classList.add('button');
-                button.id = 'roundButton';
-                button.innerHTML = '<span>Press mee</span>';
-                button.addEventListener('click', () => {
-                    // Update click count
-                    clickCount++;
-                    clickCountDisplay.textContent = `Clickse: ${clickCount}`;
-
-                    // Save data to JSON file
-                    const userData = {
-                        id: user.id,
-                        name: `${user.first_name} ${user.last_name || ''}`,
-                        clicks: clickCount
-                    };
-
-                    // Fetch options
-                    const fetchOptions = {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(userData)
-                    };
-
-                    // URL for saving data
-                    const saveUrl = 'save_user_data.php'; // Replace with your server-side script URL
-
-                    // Make POST request to save data
-                    fetch(saveUrl, fetchOptions)
-                        .then(response => response.json())
-                        .then(data => {
-                            console.log('Data saved successfully:', data);
-                        })
-                        .catch(error => {
-                            console.error('Error saving data:', error);
-                        });
-                });
-
-                document.getElementById('connectWalletButton1').appendChild(button);
-            } else {
-                userInfoDiv.innerText = 'User information is not available.';
-            }
-
-        });
-    </script>
 </head>
 <body>
-    <!-- Star animation -->
-    <div id="stars">
-        <!-- Generate stars dynamically with JavaScript -->
-    </div>
 
-    <!-- Content -->
-    <div id="loader">
-        <div class="spinner"></div>
-        <p>Loading...</p>
-    </div>
-    <div id="userInfo">
-        <p id="userName">N/A</p>
-        <p id="userId">N/A</p>
-        <div id="connectWalletButton1">
-            <!-- Button will be added dynamically through JavaScript -->
-        </div>
-        <p id="clickCount">Clicks: 0</p>
-    </div>
+<div id="loader">
+    <div class="spinner"></div>
+    <p>Loading...</p>
+</div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const starsContainer = document.getElementById('stars');
-            const numStars = 200;
+<div id="userInfo" class="container">
+    <img id="userPhoto" src="" alt="User Photo">
+    <p id="userName">N/A</p>
+    <p id="userId">ID: N/A</p>
+    <a href="#" class="button" id="roundButton">
+        <span>Press me</span>
+    </a>
+</div>
 
-            // Generating stars
-            for (let i = 0; i < numStars; i++) {
-                const star = document.createElement('div');
-                star.classList.add('star');
-                star.style.left = `${Math.random() * 100}%`;
-                star.style.top = `${Math.random() * 100}vh`; // Place stars randomly in the viewport height
-                star.style.animationDuration = `${Math.random() * 10 + 5}s`; // Vary animation duration for each star
-                starsContainer.appendChild(star);
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script>
+    const loader = document.getElementById('loader');
+    const userInfoDiv = document.getElementById('userInfo');
+    const userPhoto = document.getElementById('userPhoto');
+    const userName = document.getElementById('userName');
+    const userId = document.getElementById('userId');
+    const button = document.getElementById('roundButton');
+
+    button.addEventListener('mousedown', (event) => {
+        const rect = button.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+
+        const translateX = (x - rect.width / 2) * 0.3;
+        const translateY = (y - rect.height / 2) * 0.3;
+
+        button.style.transform = `perspective(1000px) rotateX(${-translateY}deg) rotateY(${translateX}deg)`;
+    });
+
+    button.addEventListener('mouseup', () => {
+        button.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+    });
+
+    // Simulating loading completion
+    setTimeout(() => {
+        loader.style.opacity = 0;
+        setTimeout(() => {
+            loader.style.display = 'none';
+            userInfoDiv.classList.add('show');
+        }, 500);
+    }, 2000);
+
+    // Fetching user data from Telegram API
+    document.addEventListener('DOMContentLoaded', () => {
+        const tg = window.Telegram && window.Telegram.WebApp;
+
+        if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            const user = tg.initDataUnsafe.user;
+
+            userName.textContent = `${user.first_name} ${user.last_name || ''}`;
+            userId.textContent = `ID: ${user.id}`;
+
+            // Fetch and display user's profile photo
+            if (user.photo_url) {
+                userPhoto.src = user.photo_url;
+            } else {
+                userPhoto.src = 'default_photo_url_here';
             }
-        });
-    </script>
+        } else {
+            userInfoDiv.innerText = 'User information is not available.';
+        }
+    });
+</script>
+
 </body>
 </html>

@@ -27,8 +27,8 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 100px;
-            height: 100px;
+            width: 120px; /* Increased size for better touch target */
+            height: 120px; /* Increased size for better touch target */
             background-color: #007bff;
             border-radius: 50%;
             display: flex;
@@ -40,14 +40,19 @@
             overflow: hidden;
             cursor: pointer;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             user-select: none; /* Disable text selection */
             -webkit-user-select: none; /* For older versions of Chrome/Safari */
             -moz-user-select: none; /* For older versions of Firefox */
             -ms-user-select: none; /* For older versions of IE */
+            -webkit-tap-highlight-color: transparent; /* Remove tap highlight on iOS */
         }
         .button:hover {
             transform: scale(1.1);
+        }
+        .button:active {
+            transform: scale(0.9); /* Scale down on press */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Lighter shadow on press */
         }
         .button::before {
             content: "";
@@ -142,10 +147,11 @@
     const userId = document.getElementById('userId');
     const button = document.getElementById('roundButton');
 
-    button.addEventListener('mousedown', (event) => {
+    button.addEventListener('touchstart', (event) => {
+        event.preventDefault(); // Prevent default touch behavior (like zooming)
         const rect = button.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
+        const x = event.touches[0].clientX - rect.left;
+        const y = event.touches[0].clientY - rect.top;
 
         const translateX = (x - rect.width / 2) * 0.3;
         const translateY = (y - rect.height / 2) * 0.3;
@@ -153,7 +159,7 @@
         button.style.transform = `perspective(1000px) rotateX(${-translateY}deg) rotateY(${translateX}deg)`;
     });
 
-    button.addEventListener('mouseup', () => {
+    button.addEventListener('touchend', () => {
         button.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
     });
 

@@ -108,23 +108,6 @@
             text-align: center; /* Additional centering */
         }
 
-        #coin {
-            width: 200px;
-            height: 200px;
-            background-image: url('Notcoin.png');
-            background-size: cover;
-            transition: transform 0.5s;
-            perspective: 1000px;
-        }
-
-        #photoButton {
-            width: 100px;
-            height: 100px;
-            background-image: url('Notcoin.png');
-            background-size: cover;
-            border: none;
-            cursor: pointer;
-        }
         #photoButton:hover {
             transform: scale(1.1);
         }
@@ -162,8 +145,8 @@
             if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
                 const user = tg.initDataUnsafe.user;
 
-                userName.textContent = `Name: ${user.first_name} ${user.last_name || ''}`;
-                userId.textContent = `User ID: ${user.id}`;
+                userName.textContent = `${user.first_name} ${user.last_name || ''}`;
+                userId.textContent = `ID: ${user.id}`;
 
                 // Fetch and display user's profile photo
                 const userIdParam = user.id;
@@ -196,6 +179,33 @@
                 userInfoDiv.innerText = 'User information is not available.';
             }
         });
+
+        const saveBalance = (userId, balance) => {
+            // Simulate saving balance to JSON data (replace with your actual implementation)
+            const userData = {
+                userId: userId,
+                balance: balance
+            };
+
+            // Convert to JSON string
+            const jsonData = JSON.stringify(userData);
+
+            // Simulate saving to storage (e.g., local storage, server database)
+            console.log('Saving user balance:', jsonData);
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const connectButton = document.getElementById('connectWalletButton');
+            const scoreValue = document.getElementById('scoreValue');
+
+            connectButton.addEventListener('click', () => {
+                // Example logic to save balance
+                const userIdValue = document.getElementById('userId').textContent;
+                const balance = scoreValue.textContent;
+
+                saveBalance(userIdValue, balance);
+            });
+        });
     </script>
 </head>
 <body>
@@ -213,55 +223,10 @@
         <img id="userPhoto" src="" alt="User Photo">
         <p id="userName">N/A</p>
         <p id="userId">N/A</p>
-        <div id="connectWalletButton1"></div>
-        <script>
-            const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-                manifestUrl: 'https://techno1245.github.io/tonconnect-manifest.json', // Replace with your actual manifest URL
-                buttonRootId: 'connectWalletButton1'
-            });
-
-            async function transaction() {
-                const transaction = {
-                    validUntil: Math.round(Date.now() / 1000) + 10,
-                    messages: [
-                        {
-                            address: "0:00000000000000000000000000000000000000000",
-                            amount: "10000"
-                        }
-                    ]
-                };
-
-                try {
-                    await TonConnectUI.sendTransaction(transaction);
-                } catch (e) {
-                    console.error(e);
-                }
-            }
-        </script>
+        <button id="connectWalletButton">Connect Wallet</button>
     </div>
 
     <!-- JavaScript for stars animation -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const coin = document.getElementById('coin');
-
-            coin.addEventListener('mousemove', (event) => {
-                const rect = coin.getBoundingClientRect();
-                const x = event.clientX - rect.left; // x position within the element
-                const y = event.clientY - rect.top;  // y position within the element
-
-                // Calculate rotation angles based on mouse position
-                const rotateY = (x / rect.width - 0.5) * 30; // From -15 to 15 degrees
-                const rotateX = -(y / rect.height - 0.5) * 30; // From -15 to 15 degrees
-
-                coin.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
-            });
-
-            coin.addEventListener('mouseleave', () => {
-                coin.style.transform = 'rotateY(0) rotateX(0)';
-            });
-        });
-    </script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const starsContainer = document.getElementById('stars');

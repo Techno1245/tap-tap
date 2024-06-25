@@ -39,11 +39,11 @@
         }
         .button {
             position: absolute;
-            top: calc(50% + 15px); /* 15px нижче від центру */
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 150px; /* Increased size for better touch target */
-            height: 150px; /* Increased size for better touch target */
+            top: 80%; /* Змінено з calc(50% + 15px) на 70% для переміщення вниз */
+            left: 20%; /* Змінено з 50% на 60% для переміщення праворуч */
+            transform: translate(-50%, -50%); /* Залишаємо як є для центровання */
+            width: 150px;
+            height: 150px;
             background-color: #007bff;
             border-radius: 50%;
             display: flex;
@@ -56,12 +56,13 @@
             cursor: pointer;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
             transition: transform 0.1s ease, box-shadow 0.1s ease;
-            user-select: none; /* Disable text selection */
-            -webkit-user-select: none; /* For older versions of Chrome/Safari */
-            -moz-user-select: none; /* For older versions of Firefox */
-            -ms-user-select: none; /* For older versions of IE */
-            -webkit-tap-highlight-color: transparent; /* Remove tap highlight on iOS */
-        }
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+    }
+
         .button:active {
             transform: scale(0.95); /* Smaller scale on press */
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Lighter shadow on press */
@@ -135,7 +136,6 @@
 </div>
 
 <div id="userInfo" class="container">
-    <img id="userPhoto" src="" alt="User Photo">
     <p id="userClicks">Clicks: 0</p>
     <p id="userName">N/A</p>
     <p id="userId">ID: N/A</p>
@@ -170,8 +170,8 @@
         const x = event.touches[0].clientX - rect.left;
         const y = event.touches[0].clientY - rect.top;
 
-        const translateX = (x - rect.width / 2) * 0.1; // Smaller deformation
-        const translateY = (y - rect.height / 2) * 0.1; // Smaller deformation
+        const translateX = (x - rect.width / 2) * 0.4; // Smaller deformation
+        const translateY = (y - rect.height / 2) * 0.4; // Smaller deformation
 
         button.style.transform = `perspective(1000px) rotateX(${-translateY}deg) rotateY(${translateX}deg)`;
     });

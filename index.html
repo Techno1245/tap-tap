@@ -8,15 +8,15 @@
         body {
             background-color: #0f0f0f;
             background-image: radial-gradient(circle, #1a82f7, #2b2b2b);
-            background-size: 200% 200%; /* Double the size for smooth animation */
-            animation: swimBackground 20s infinite linear; /* Animation settings */
+            background-size: 200% 200%;
+            animation: swimBackground 20s infinite linear;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
             font-family: Arial, sans-serif;
-            overflow: hidden; /* Prevent scrolling */
+            overflow: hidden;
             color: #ffffff;
         }
 
@@ -35,13 +35,14 @@
         .container {
             max-width: 600px;
             text-align: center;
-            position: relative; /* For button positioning */
+            position: relative;
         }
+
         .button {
             position: absolute;
-            top: 95%; /* Змінено з calc(50% + 15px) на 70% для переміщення вниз */
-            left: 0%; /* Змінено з 50% на 60% для переміщення праворуч */
-            transform: translate(-50%, -50%); /* Залишаємо як є для центровання */
+            top: 95%;
+            left: -10%;
+            transform: translate(-50%, -50%);
             width: 190px;
             height: 190px;
             background-color: #007bff;
@@ -61,16 +62,18 @@
             -moz-user-select: none;
             -ms-user-select: none;
             -webkit-tap-highlight-color: transparent;
-    }
+        }
 
         .button:active {
-            transform: scale(0.95); /* Smaller scale on press */
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Lighter shadow on press */
+            transform: scale(0.95);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
+
         .button span {
             position: relative;
             z-index: 1;
         }
+
         #loader {
             display: flex;
             flex-direction: column;
@@ -80,6 +83,7 @@
             opacity: 1;
             transition: opacity 0.5s ease-out;
         }
+
         #loader .spinner {
             width: 50px;
             height: 50px;
@@ -88,10 +92,12 @@
             border-top-color: #FFFFFF;
             animation: spin 1s linear infinite;
         }
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
         #userInfo {
             display: none;
             text-align: center;
@@ -99,31 +105,36 @@
             opacity: 0;
             transition: opacity 0.5s ease-in;
         }
+
         #userInfo.show {
             display: block;
             animation: fadeIn 0.5s ease-in-out forwards;
         }
+
         @keyframes fadeIn {
             0% { opacity: 0; }
             100% { opacity: 1; }
         }
+
         #userPhoto {
             border-radius: 50%;
             margin-bottom: 20px;
             width: 100px;
             height: 100px;
         }
+
         #userClicks, #userName, #userId {
             font-size: 24px;
             margin-top: 10px;
         }
+
         .pc-message {
             position: absolute;
-            top: calc(50% + 100px); /* Позиціонуємо повідомлення нижче кнопки */
+            top: calc(50% + 100px);
             left: 50%;
             transform: translateX(-50%);
             font-size: 16px;
-            color: #ff0000; /* Червоний колір */
+            color: #ff0000;
             display: none;
         }
     </style>
@@ -139,9 +150,9 @@
     <p id="userClicks">Clicks: 0</p>
     <p id="userName">N/A</p>
     <p id="userId">ID: N/A</p>
-    <a href="#" class="button" id="roundButton" style="transform: perspective(1000px) rotateX(0deg) rotateY(0deg);">
+    <button class="button" id="roundButton">
         <span>Press me</span>
-    </a>
+    </button>
     <div class="pc-message" id="pcMessage">This button is not accessible from a PC.</div>
 </div>
 

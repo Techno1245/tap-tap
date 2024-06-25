@@ -107,6 +107,27 @@
             right: 0;
             text-align: center; /* Additional centering */
         }
+
+        #coin {
+            width: 200px;
+            height: 200px;
+            background-image: url('Notcoin.png');
+            background-size: cover;
+            transition: transform 0.5s;
+            perspective: 1000px;
+        }
+
+        #photoButton {
+            width: 100px;
+            height: 100px;
+            background-image: url('Notcoin.png');
+            background-size: cover;
+            border: none;
+            cursor: pointer;
+        }
+        #photoButton:hover {
+            transform: scale(1.1);
+        }
     </style>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@0.0.9/dist/tonconnect-ui.min.js"></script>
@@ -220,6 +241,27 @@
     </div>
 
     <!-- JavaScript for stars animation -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const coin = document.getElementById('coin');
+
+            coin.addEventListener('mousemove', (event) => {
+                const rect = coin.getBoundingClientRect();
+                const x = event.clientX - rect.left; // x position within the element
+                const y = event.clientY - rect.top;  // y position within the element
+
+                // Calculate rotation angles based on mouse position
+                const rotateY = (x / rect.width - 0.5) * 30; // From -15 to 15 degrees
+                const rotateX = -(y / rect.height - 0.5) * 30; // From -15 to 15 degrees
+
+                coin.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
+            });
+
+            coin.addEventListener('mouseleave', () => {
+                coin.style.transform = 'rotateY(0) rotateX(0)';
+            });
+        });
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const starsContainer = document.getElementById('stars');

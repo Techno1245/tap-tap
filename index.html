@@ -19,7 +19,7 @@
             overflow: hidden; /* Prevent scrolling */
             color: #ffffff;
         }
-        
+
         @keyframes swimBackground {
             0% {
                 background-position: 0% 0%;
@@ -55,7 +55,7 @@
             overflow: hidden;
             cursor: pointer;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
             user-select: none; /* Disable text selection */
             -webkit-user-select: none; /* For older versions of Chrome/Safari */
             -moz-user-select: none; /* For older versions of Firefox */
@@ -63,7 +63,7 @@
             -webkit-tap-highlight-color: transparent; /* Remove tap highlight on iOS */
         }
         .button:active {
-            transform: scale(0.9); /* Scale down on press */
+            transform: scale(0.95); /* Smaller scale on press */
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Lighter shadow on press */
         }
         .button::before {
@@ -78,9 +78,6 @@
             transform: scaleY(0) scaleX(0);
             transition: transform 0.3s ease;
             z-index: -1;
-        }
-        .button:hover::before {
-            transform: scaleY(1) scaleX(1);
         }
         .button span {
             position: relative;
@@ -141,6 +138,7 @@
             color: #ff0000; /* Червоний колір */
             display: none;
         }
+
     </style>
 </head>
 <body>
@@ -163,87 +161,88 @@
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>
-    const loader = document.getElementById('loader');
-    const userInfoDiv = document.getElementById('userInfo');
-    const userPhoto = document.getElementById('userPhoto');
-    const userName = document.getElementById('userName');
-    const userId = document.getElementById('userId');
-    const userClicksElement = document.getElementById('userClicks');
-    const button = document.getElementById('roundButton');
-    const pcMessage = document.getElementById('pcMessage');
+const loader = document.getElementById('loader');
+const userInfoDiv = document.getElementById('userInfo');
+const userPhoto = document.getElementById('userPhoto');
+const userName = document.getElementById('userName');
+const userId = document.getElementById('userId');
+const userClicksElement = document.getElementById('userClicks');
+const button = document.getElementById('roundButton');
+const pcMessage = document.getElementById('pcMessage');
 
-    let userClicks = 0;
+let userClicks = 0;
 
-    const saveClicks = (userId, clicks) => {
-        const balances = JSON.parse(localStorage.getItem('balances')) || {};
-        balances[userId] = clicks;
-        localStorage.setItem('balances', JSON.stringify(balances));
-    };
+const saveClicks = (userId, clicks) => {
+    const balances = JSON.parse(localStorage.getItem('balances')) || {};
+    balances[userId] = clicks;
+    localStorage.setItem('balances', JSON.stringify(balances));
+};
 
-    button.addEventListener('touchstart', (event) => {
-        event.preventDefault(); // Prevent default touch behavior (like zooming)
-        const rect = button.getBoundingClientRect();
-        const x = event.touches[0].clientX - rect.left;
-        const y = event.touches[0].clientY - rect.top;
+button.addEventListener('touchstart', (event) => {
+    event.preventDefault(); // Prevent default touch behavior (like zooming)
+    const rect = button.getBoundingClientRect();
+    const x = event.touches[0].clientX - rect.left;
+    const y = event.touches[0].clientY - rect.top;
 
-        const translateX = (x - rect.width / 2) * 0.3;
-        const translateY = (y - rect.height / 2) * 0.3;
+    const translateX = (x - rect.width / 2) * 0.1; // Smaller deformation
+    const translateY = (y - rect.height / 2) * 0.1; // Smaller deformation
 
-        button.style.transform = `perspective(10px) rotateX(${-translateY}deg) rotateY(${translateX}deg)`;
-    });
+    button.style.transform = `perspective(10px) rotateX(${-translateY}deg) rotateY(${translateX}deg)`;
+});
 
-    button.addEventListener('touchend', () => {
-        button.style.transform = 'perspective(0px) rotateX(0deg) rotateY(0deg)';
-    });
+button.addEventListener('touchend', () => {
+    button.style.transform = 'perspective(0px) rotateX(0deg) rotateY(0deg)';
+});
 
-    button.addEventListener('click', (event) => {
-        userClicks++;
-        userClicksElement.textContent = `Clicks: ${userClicks}`;
-        if (userClicks % 2 === 0) {
-            saveClicks(userId.textContent.split(': ')[1], userClicks);
-        }
-    });
+button.addEventListener('click', (event) => {
+    userClicks++;
+    userClicksElement.textContent = `Clicks: ${userClicks}`;
+    if (userClicks % 2 === 0) {
+        saveClicks(userId.textContent.split(': ')[1], userClicks);
+    }
+});
 
-    // Simulating loading completion
+// Simulating loading completion
+setTimeout(() => {
+    loader.style.opacity = 0;
     setTimeout(() => {
-        loader.style.opacity = 0;
-        setTimeout(() => {
-            loader.style.display = 'none';
-            userInfoDiv.classList.add('show');
-        }, 500);
-    }, 2000);
+        loader.style.display = 'none';
+        userInfoDiv.classList.add('show');
+    }, 500);
+}, 2000);
 
-    // Fetching user data from Telegram API
-    document.addEventListener('DOMContentLoaded', () => {
-        const tg = window.Telegram && window.Telegram.WebApp;
+// Fetching user data from Telegram API
+document.addEventListener('DOMContentLoaded', () => {
+    const tg = window.Telegram && window.Telegram.WebApp;
 
-        if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            const user = tg.initDataUnsafe.user;
+    if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+        const user = tg.initDataUnsafe.user;
 
-            userName.textContent = `${user.first_name} ${user.last_name || ''}`;
-            userId.textContent = `ID: ${user.id}`;
+        userName.textContent = `${user.first_name} ${user.last_name || ''}`;
+        userId.textContent = `ID: ${user.id}`;
 
-            // Fetch and display user's profile photo
-            if (user.photo_url) {
-                userPhoto.src = user.photo_url;
-            } else {
-                userPhoto.src = 'default_photo_url_here';
-            }
-
-            // Load user clicks from localStorage
-            const balances = JSON.parse(localStorage.getItem('balances')) || {};
-            userClicks = balances[user.id] || 0;
-            userClicksElement.textContent = `Clicks: ${userClicks}`;
+        // Fetch and display user's profile photo
+        if (user.photo_url) {
+            userPhoto.src = user.photo_url;
         } else {
-            userInfoDiv.innerText = 'User information is not available.';
+            userPhoto.src = 'default_photo_url_here';
         }
 
-        // Show PC message if accessed from desktop
-        if (!('ontouchstart' in window)) {
-            pcMessage.style.display = 'block';
-            button.style.display = 'none';
-        }
-    });
+        // Load user clicks from localStorage
+        const balances = JSON.parse(localStorage.getItem('balances')) || {};
+        userClicks = balances[user.id] || 0;
+        userClicksElement.textContent = `Clicks: ${userClicks}`;
+    } else {
+        userInfoDiv.innerText = 'User information is not available.';
+    }
+
+    // Show PC message if accessed from desktop
+    if (!('ontouchstart' in window)) {
+        pcMessage.style.display = 'block';
+        button.style.display = 'none';
+    }
+});
+
 </script>
 
 </body>

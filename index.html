@@ -194,7 +194,7 @@
                 const user = tg.initDataUnsafe.user;
 
                 userName.textContent = `${user.first_name} ${user.last_name || ''}`;
-                userId.textContent = `IDеее: ${user.id}`; // Display user ID
+                userId.textContent = `ID: ${user.id}`; // Display user ID
                 
                 // Fetch and display user's profile photo
                 const userIdParam = user.id;
@@ -229,14 +229,11 @@
                 button.href = '#';
                 button.classList.add('button');
                 button.id = 'roundButton';
-                button.innerHTML = '<span>Press me</span>';
-                document.getElementById('connectWalletButton1').appendChild(button);
-
-                // Event listener for button click
+                button.innerHTML = '<span>Press mee</span>';
                 button.addEventListener('click', () => {
                     // Update click count
                     clickCount++;
-                    clickCountDisplay.textContent = `Clicks: ${clickCount}`;
+                    clickCountDisplay.textContent = `Clickse: ${clickCount}`;
 
                     // Save data to JSON file
                     const userData = {
@@ -267,6 +264,8 @@
                             console.error('Error saving data:', error);
                         });
                 });
+
+                document.getElementById('connectWalletButton1').appendChild(button);
             } else {
                 userInfoDiv.innerText = 'User information is not available.';
             }

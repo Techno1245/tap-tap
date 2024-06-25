@@ -24,11 +24,11 @@
         }
         .button {
             position: absolute;
-            top: 50%;
+            top: calc(50% + 15px); /* 15px нижче від центру */
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 120px; /* Increased size for better touch target */
-            height: 120px; /* Increased size for better touch target */
+            width: 150px; /* Increased size for better touch target */
+            height: 150px; /* Increased size for better touch target */
             background-color: #007bff;
             border-radius: 50%;
             display: flex;
@@ -120,6 +120,15 @@
             font-size: 24px;
             margin-top: 10px;
         }
+        .pc-message {
+            position: absolute;
+            top: calc(50% + 100px); /* Позиціонуємо повідомлення нижче кнопки */
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 16px;
+            color: #ff0000; /* Червоний колір */
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -136,6 +145,7 @@
     <a href="#" class="button" id="roundButton">
         <span>Press me</span>
     </a>
+    <div class="pc-message" id="pcMessage">This button is not accessible from a PC.</div>
 </div>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -146,6 +156,14 @@
     const userName = document.getElementById('userName');
     const userId = document.getElementById('userId');
     const button = document.getElementById('roundButton');
+    const pcMessage = document.getElementById('pcMessage');
+
+    let userClicks = 0;
+    const saveClicks = (userId, clicks) => {
+        const balances = JSON.parse(localStorage.getItem('balances')) || {};
+        balances[userId] = clicks;
+        localStorage.setItem('balances', JSON.stringify(balances));
+    };
 
     button.addEventListener('touchstart', (event) => {
         event.preventDefault(); // Prevent default touch behavior (like zooming)
@@ -160,7 +178,13 @@
     });
 
     button.addEventListener('touchend', () => {
-        button.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+        button.style.transform = 'perspective(0px) rotateX(0deg) rotateY(0deg)';
+    });
+
+    button.addEventListener('click', (event) => {
+        userClicks++;
+        saveClicks(userId.textContent.split(': ')[1], userClicks);
+        alert(`Clicks: ${userClicks}`);
     });
 
     // Simulating loading completion
@@ -188,8 +212,18 @@
             } else {
                 userPhoto.src = 'default_photo_url_here';
             }
+
+            // Load user clicks from localStorage
+            const balances = JSON.parse(localStorage.getItem('balances')) || {};
+            userClicks = balances[user.id] || 0;
         } else {
             userInfoDiv.innerText = 'User information is not available.';
+        }
+
+        // Show PC message if accessed from desktop
+        if (!('ontouchstart' in window)) {
+            pcMessage.style.display = 'block';
+            button.style.display = 'none';
         }
     });
 </script>

@@ -223,36 +223,35 @@
                     .catch(error => {
                         console.error('Error fetching user profile photos:', error);
                     });
-                    const button = document.createElement('a');
-                button.href = '#';
-                button.classList.add('button');
-                button.id = 'roundButton';
-                button.innerHTML = '<span>Press me</span>';
-                document.body.appendChild(button);
-
-                const buttonElement = document.getElementById('roundButton');
-
-                buttonElement.addEventListener('mousedown', (event) => {
-                    const rect = buttonElement.getBoundingClientRect();
-                    const x = event.clientX - rect.left;
-                    const y = event.clientY - rect.top;
-
-                    const translateX = (x - rect.width / 2) * 0.3;
-                    const translateY = (y - rect.height / 2) * 0.3;
-
-                    buttonElement.style.transform = `perspective(1000px) rotateX(${-translateY}deg) rotateY(${translateX}deg)`;
-                });
-
-                buttonElement.addEventListener('mouseup', () => {
-                    buttonElement.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
-                    clickCount++;
-                    clickCountDisplay.textContent = `Clicks: ${clickCount}`;
-                });
             } else {
                 userInfoDiv.innerText = 'User information is not available.';
             }
 
+            const button = document.createElement('a');
+            button.href = '#';
+            button.classList.add('button');
+            button.id = 'roundButton';
+            button.innerHTML = '<span>Press me</span>';
+            document.body.appendChild(button);
 
+            const buttonElement = document.getElementById('roundButton');
+
+            buttonElement.addEventListener('mousedown', (event) => {
+                const rect = buttonElement.getBoundingClientRect();
+                const x = event.clientX - rect.left;
+                const y = event.clientY - rect.top;
+
+                const translateX = (x - rect.width / 2) * 0.3;
+                const translateY = (y - rect.height / 2) * 0.3;
+
+                buttonElement.style.transform = `perspective(1000px) rotateX(${-translateY}deg) rotateY(${translateX}deg)`;
+            });
+
+            buttonElement.addEventListener('mouseup', () => {
+                buttonElement.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+                clickCount++;
+                clickCountDisplay.textContent = `Clicks: ${clickCount}`;
+            });
         });
     </script>
 </head>

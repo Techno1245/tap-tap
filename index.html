@@ -36,13 +36,13 @@
         max-width: 600px;
         text-align: center;
         position: relative; /* Для позиціонування кнопки */
-        transform: translateY(-90px); /* Піднімає контейнер на 20 пікселів */
+
         }
 
         .button {
             position: absolute;
             top: 60%; /* Змінено з calc(50% + 15px) на 70% для переміщення вниз */
-            left: -30%; /* Змінено з 50% на 60% для переміщення праворуч */
+            left: -25%; /* Змінено з 50% на 60% для переміщення праворуч */
             transform: translate(-50%, -50%); /* Залишаємо як є для центровання */
             width: 250px;
             height: 250px;
@@ -65,7 +65,7 @@
             -webkit-tap-highlight-color: transparent;
             
             background-image: url('Notcoin.png'); /* Зображення фону */
-            background-size: 20; /* Масштабувати, щоб покривало всю кнопку */
+            background-size: 10; /* Масштабувати, щоб покривало всю кнопку */
             background-position: center; /* Центрувати зображення */
         }
 
@@ -105,7 +105,7 @@
             text-align: center;
             margin-top: 20px;
             opacity: 0;
-            transition: opacity 0.5s ease-in;
+            transform: translateY(-30px)
         }
         #userInfo.show {
             display: block;

@@ -61,16 +61,22 @@
             -moz-user-select: none;
             -ms-user-select: none;
             -webkit-tap-highlight-color: transparent;
+            
+            background-image: url('notcoin.png'); /* Зображення фону */
+            background-size: cover; /* Масштабувати, щоб покривало всю кнопку */
+            background-position: center; /* Центрувати зображення */
+        }
+
+    .button:active {
+        transform: scale(0.95); /* Зменшення масштабу при натисканні */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Легша тінь при натисканні */
     }
 
-        .button:active {
-            transform: scale(0.95); /* Smaller scale on press */
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Lighter shadow on press */
-        }
-        .button span {
-            position: relative;
-            z-index: 1;
-        }
+    .button span {
+        position: relative;
+        z-index: 1;
+    }
+
         #loader {
             display: flex;
             flex-direction: column;
@@ -164,20 +170,21 @@
         localStorage.setItem('balances', JSON.stringify(balances));
     };
 
-    button.addEventListener('touchstart', (event) => {
-        event.preventDefault(); // Prevent default touch behavior (like zooming)
+    // Handling button press with pointer events for better compatibility
+    button.addEventListener('pointerdown', (event) => {
+        event.preventDefault();
         const rect = button.getBoundingClientRect();
-        const x = event.touches[0].clientX - rect.left;
-        const y = event.touches[0].clientY - rect.top;
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
 
-        const translateX = (x - rect.width / 2) * 0.4; // Smaller deformation
-        const translateY = (y - rect.height / 2) * 0.4; // Smaller deformation
+        const translateX = (x - rect.width / 2) * 0.4;
+        const translateY = (y - rect.height / 2) * 0.4;
 
-        button.style.transform = `perspective(1000px) rotateX(${-translateY}deg) rotateY(${translateX}deg)`;
+        button.style.transform = `perspective(1000px) rotateX(${-translateY}deg) rotateY(${translateX}deg) scale(0.95)`;
     });
 
-    button.addEventListener('touchend', () => {
-        button.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+    button.addEventListener('pointerup', () => {
+        button.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)';
     });
 
     button.addEventListener('click', (event) => {
